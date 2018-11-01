@@ -79,9 +79,9 @@ In this method, you will by addicting a new scene to MoonJohn, which be represen
 
 Works like addScene method, so, lookup the "addScene" description.
 
-### switchScene(scene)
+### switchScene(scene, [message])
 
-This is the main method to switch between the scenes. Using this method, the current scene will be changed to the requested scene, if exists. The previous scenes will be stored in a stack to know the previous scene if needed.
+This is the main method to switch between the scenes. Using this method, the current scene will be changed to the requested scene, if it exists, beyond that, you can pass a message to requested scene, and it will be put into the scene attributes. The previous scenes will be stored in a stack to know the previous scene if needed.
 
 ### previousScene()
 
