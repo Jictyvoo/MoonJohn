@@ -104,9 +104,10 @@ function MoonJohn:clearStack(scene)
     self.currentSubscene = nil
 end
 
-function MoonJohn:switchSubscene(subscene)
+function MoonJohn:switchSubscene(subscene, args)
     self.currentSubscene = self.subsceneObjects[subscene]
     assert(self.currentSubscene, string.format("Unable to find requested subscene \"%s\"", tostring(subscene)))
+    self.currentSubscene.args = args
 end
 
 function MoonJohn:exitSubscene()
