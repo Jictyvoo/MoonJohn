@@ -52,7 +52,7 @@ function MoonJohn:new(firstScene)
         currentSubscene = nil,
         sceneObjects = {},
         subsceneObjects = {},
-        sceneStack = Stack:new()
+        sceneStack = Stack:new(), transition = nil, defaultTransition = nil
     }
 
     this.currentScene = firstScene
@@ -79,18 +79,36 @@ function MoonJohn:addSubscene(subsceneName, subsceneObject, override)
     end
 end
 
-function MoonJohn:switchScene(scene, message)
-    assert(self.sceneObjects[scene], "Unable to find required scene: '" .. tostring(scene) .. "'")
+local function switchScene(self, scene, message)
     self.sceneStack.push(self.currentScene)
     self.currentScene = self.sceneObjects[scene] or self.currentScene
     self.currentScene.message = message
     self.currentSubscene = nil
 end
 
+function MoonJohn:switchScene(scene, message)
+    assert(self.sceneObjects[scene], "Unable to find required scene: '" .. tostring(scene) .. "'")
+    if self.defaultTransition then
+        local update, draw = self.defaultTransition()
+        self:setTransition(update, draw, function() switchScene(self, scene, message) end)
+    else
+        switchScene(self, scene, message)
+    end
+end
+
+local function previousScene(self)
+    self.currentScene = self.sceneStack.pop()
+    self.currentSubscene = nil
+end
+
 function MoonJohn:previousScene()
     if self.sceneStack.peek() then
-        self.currentScene = self.sceneStack.pop()
-        self.currentSubscene = nil
+        if self.defaultTransition then
+            local update, draw = self.defaultTransition()
+            self:setTransition(update, draw, function() previousScene(self) end)
+        else
+            previousScene(self)
+        end
     end
 end
 
@@ -112,6 +130,18 @@ end
 
 function MoonJohn:exitSubscene()
     self.currentSubscene = nil
+end
+
+function MoonJohn:setTransition(update, draw, callWhenOver)
+    self.transition = {draw = draw, update = update, callback = callWhenOver}
+end
+
+function MoonJohn:isTransitionOver()
+    return self.transition == nil
+end
+
+function MoonJohn:setDefaultTransition(transition)
+    self.defaultTransition = transition
 end
 
 function MoonJohn:keypressed(key, scancode, isrepeat)
@@ -175,12 +205,20 @@ function MoonJohn:wheelmoved(x, y)
 end
 
 function MoonJohn:update(dt)
-    if not self.currentSubscene then
-        if self.currentScene.update then
-            self.currentScene:update(dt)
+    if self.transition then
+        local finished = self.transition.update(dt)
+        if finished then
+            if self.transition.callback then self.transition.callback() end
+            self.transition = nil
         end
-    elseif self.currentSubscene.update then
-        self.currentSubscene:update(dt)
+    else
+        if not self.currentSubscene then
+            if self.currentScene.update then
+                self.currentScene:update(dt)
+            end
+        elseif self.currentSubscene.update then
+            self.currentSubscene:update(dt)
+        end
     end
 end
 
@@ -190,6 +228,9 @@ function MoonJohn:draw()
     end
     if self.currentSubscene and self.currentSubscene.draw then
         self.currentSubscene:draw()
+    end
+    if self.transition then
+        self.transition.draw()
     end
 end
 

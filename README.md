@@ -102,3 +102,19 @@ Is like "switchScene" method, the difference is that you will use subscenes inst
 ### exitSubscene()
 
 For now you can only have one subscene, so, to exit this subscene, just need to use this method, then you will be back to the current scene.
+
+### setTransition(update, draw, [callWhenOver])
+
+In this function, you can pass the transition function update and draw, so, in every update call by love, the transition update will be called. And the callWhenOver is a callback that will run when the transition is over
+
+### isTransitionOver()
+
+Returns true if the transition is over
+
+### setDefaultTransition(transition)
+
+Receive a function that generates the update and draw functions for transition. When this function is called every switchScene and previousScene will call a transition. If you want to disable the transitions just call this function without a argument
+
+## Transitions
+
+An example of transition can be seen in the Transitions file, that already have the fadeout transition, others will be added soon
