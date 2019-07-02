@@ -62,9 +62,7 @@ end
 
 function MoonJohn:reset(scene) --[[ A function that is called to reset the scene --]]
     assert(self.sceneObjects[scene], "Unable to find required scene: '" .. tostring(scene) .. "'")
-    if self.sceneObjects[scene].reset then
-        self.sceneObjects[scene]:reset()
-    end
+    if self.sceneObjects[scene].reset then self.sceneObjects[scene]:reset() end
 end
 
 function MoonJohn:addScene(sceneName, sceneObject, override)
@@ -88,11 +86,9 @@ local function callTransitionInScene(self, action)
 end
 
 local function switchScene(self, scene, message)
-    self.sceneStack.push(self.currentScene)
-    self.currentScene = self.sceneObjects[scene] or self.currentScene
-    self.currentScene.message = message
-    callTransitionInScene(self, "entering")
-    self.currentSubscene = nil
+    callTransitionInScene(self, "going out"); self.sceneStack.push(self.currentScene)
+    self.currentScene = self.sceneObjects[scene] or self.currentScene; self.currentScene.message = message
+    callTransitionInScene(self, "entering"); self.currentSubscene = nil
 end
 
 function MoonJohn:switchScene(scene, message)
@@ -106,9 +102,8 @@ function MoonJohn:switchScene(scene, message)
 end
 
 local function previousScene(self)
-    self.currentScene = self.sceneStack.pop()
-    callTransitionInScene(self, "going out")
-    self.currentSubscene = nil
+    callTransitionInScene(self, "going out"); self.currentScene = self.sceneStack.pop()
+    callTransitionInScene(self, "entering"); self.currentSubscene = nil
 end
 
 function MoonJohn:previousScene()
@@ -192,21 +187,13 @@ function MoonJohn:update(dt)
 end
 
 function MoonJohn:draw()
-    if self.currentScene.draw then
-        self.currentScene:draw()
-    end
-    if self.currentSubscene and self.currentSubscene.draw then
-        self.currentSubscene:draw()
-    end
-    if self.transition then
-        self.transition.draw()
-    end
+    if self.currentScene.draw then self.currentScene:draw() end
+    if self.currentSubscene and self.currentSubscene.draw then self.currentSubscene:draw() end
+    if self.transition then self.transition.draw() end
 end
 
 function MoonJohn:resize(w, h)
-    if self.currentScene.resize then
-        self.currentScene:resize(w, h)
-    end
+    if self.currentScene.resize then self.currentScene:resize(w, h) end
 end
 
 return MoonJohn
