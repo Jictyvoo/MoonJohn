@@ -58,10 +58,15 @@ All scenes and subscenes have these methods:
 ```lua
 function sceneDirector:keypressed(key, scancode, isrepeat) end
 function sceneDirector:keyreleased(key, scancode) end
+function MoonJohn:textedited(text, start, length) end
+function MoonJohn:textinput(text) end
 function sceneDirector:mousemoved(x, y, dx, dy, istouch) end
 function sceneDirector:mousepressed(x, y, button) end
 function sceneDirector:mousereleased(x, y, button) end
 function sceneDirector:wheelmoved(x, y) end
+function MoonJohn:touchmoved(id, x, y, dx, dy, pressure) end
+function MoonJohn:touchpressed(id, x, y, dx, dy, pressure) end
+function MoonJohn:touchreleased(id, x, y, dx, dy, pressure) end
 function sceneDirector:update(dt) end
 function sceneDirector:draw() end
 function sceneDirector:resize(w, h) end
@@ -102,6 +107,10 @@ Is like "switchScene" method, the difference is that you will use subscenes inst
 ### exitSubscene()
 
 For now you can only have one subscene, so, to exit this subscene, just need to use this method, then you will be back to the current scene.
+
+### entering() goingOut()
+
+When writting your scene, you can write these functions, that will be called when are entering in that scene, ou exiting that scene.
 
 ### setTransition(update, draw, [callWhenOver])
 

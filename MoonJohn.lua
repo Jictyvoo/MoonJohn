@@ -79,10 +79,19 @@ function MoonJohn:addSubscene(subsceneName, subsceneObject, override)
     end
 end
 
+local function callTransitionInScene(self, action)
+    if self.currentScene then
+        if action == "entering" and self.currentScene.entering then self.currentScene:entering()
+        elseif action == "going out" and self.currentScene.goingOut then self.currentScene:goingOut()
+        end
+    end
+end
+
 local function switchScene(self, scene, message)
     self.sceneStack.push(self.currentScene)
     self.currentScene = self.sceneObjects[scene] or self.currentScene
     self.currentScene.message = message
+    callTransitionInScene(self, "entering")
     self.currentSubscene = nil
 end
 
@@ -98,6 +107,7 @@ end
 
 local function previousScene(self)
     self.currentScene = self.sceneStack.pop()
+    callTransitionInScene(self, "going out")
     self.currentSubscene = nil
 end
 
@@ -144,75 +154,60 @@ function MoonJohn:setDefaultTransition(transition)
     self.defaultTransition = transition
 end
 
-function MoonJohn:keypressed(key, scancode, isrepeat)
+local function inputEvents(self, name, ...)
     if not self.transition then
         if not self.currentSubscene then
-            if self.currentScene.keypressed then
-                self.currentScene:keypressed(key, scancode, isrepeat)
+            if self.currentScene[name] then
+                self.currentScene[name](self.currentScene, ...)
             end
-        elseif self.currentSubscene.keypressed then
-            self.currentSubscene:keypressed(key, scancode, isrepeat)
+        elseif self.currentSubscene[name] then
+            self.currentSubscene[name](self.currentSubscene, ...)
         end
     end
 end
-
-function MoonJohn:keyreleased(key, scancode)
-    if not self.transition then
-        if not self.currentSubscene then
-            if self.currentScene.keyreleased then
-                self.currentScene:keyreleased(key, scancode)
-            end
-        elseif self.currentSubscene.keyreleased then
-            self.currentSubscene:keyreleased(key, scancode)
-        end
+do --[[ Here's all event functions --]]
+    function MoonJohn:keypressed(key, scancode, isrepeat)
+        inputEvents(self, "keypressed", key, scancode, isrepeat)
     end
-end
 
-function MoonJohn:mousemoved(x, y, dx, dy, istouch)
-    if not self.transition then
-        if not self.currentSubscene then
-            if self.currentScene.mousemoved then
-                self.currentScene:mousemoved(x, y, dx, dy, istouch)
-            end
-        elseif self.currentSubscene.mousemoved then
-            self.currentSubscene:mousemoved(x, y, dx, dy, istouch)
-        end
+    function MoonJohn:keyreleased(key, scancode)
+        inputEvents(self, "keyreleased", key, scancode)
     end
-end
 
-function MoonJohn:mousepressed(x, y, button)
-    if not self.transition then
-        if not self.currentSubscene then
-            if self.currentScene.mousepressed then
-                self.currentScene:mousepressed(x, y, button)
-            end
-        elseif self.currentSubscene.mousepressed then
-            self.currentSubscene:mousepressed(x, y, button)
-        end
+    function MoonJohn:textedited(text, start, length)
+        inputEvents(self, "textedited", text, start, length)
     end
-end
 
-function MoonJohn:mousereleased(x, y, button)
-    if not self.transition then
-        if not self.currentSubscene then
-            if self.currentScene.mousereleased then
-                self.currentScene:mousereleased(x, y, button)
-            end
-        elseif self.currentSubscene.mousereleased then
-            self.currentSubscene:mousereleased(x, y, button)
-        end
+    function MoonJohn:textinput(text)
+        inputEvents(self, "textinput", text)
     end
-end
 
-function MoonJohn:wheelmoved(x, y)
-    if not self.transition then
-        if not self.currentSubscene then
-            if self.currentScene.wheelmoved then
-                self.currentScene:wheelmoved(x, y)
-            end
-        elseif self.currentSubscene.wheelmoved then
-            self.currentSubscene:wheelmoved(x, y)
-        end
+    function MoonJohn:mousemoved(x, y, dx, dy, istouch)
+        inputEvents(self, "mousemoved", x, y, dx, dy, istouch)
+    end
+
+    function MoonJohn:mousepressed(x, y, button)
+        inputEvents(self, "mousepressed", x, y, button)
+    end
+
+    function MoonJohn:mousereleased(x, y, button)
+        inputEvents(self, "mousereleased", x, y, button)
+    end
+
+    function MoonJohn:wheelmoved(x, y)
+        inputEvents(self, "wheelmoved", x, y)
+    end
+
+    function MoonJohn:touchmoved(id, x, y, dx, dy, pressure)
+        inputEvents(self, "touchmoved", id, x, y, dx, dy, pressure)
+    end
+
+    function MoonJohn:touchpressed(id, x, y, dx, dy, pressure)
+        inputEvents(self, "touchpressed", id, x, y, dx, dy, pressure)
+    end
+
+    function MoonJohn:touchreleased(id, x, y, dx, dy, pressure)
+        inputEvents(self, "touchreleased", id, x, y, dx, dy, pressure)
     end
 end
 
