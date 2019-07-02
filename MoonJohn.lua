@@ -48,10 +48,8 @@ MoonJohn.__index = MoonJohn
 function MoonJohn:new(firstScene)
     assert(firstScene, "MoonJohn needs a initial scene to work properly")
     local this = {
-        currentScene = nil,
-        currentSubscene = nil,
-        sceneObjects = {},
-        subsceneObjects = {},
+        currentScene = nil, currentSubscene = nil,
+        sceneObjects = {}, subsceneObjects = {}, sceneNames = {},
         sceneStack = Stack:new(), transition = nil, defaultTransition = nil
     }
 
@@ -67,7 +65,7 @@ end
 
 function MoonJohn:addScene(sceneName, sceneObject, override)
     if override or not self.sceneObjects[sceneName] then
-        self.sceneObjects[sceneName] = sceneObject
+        self.sceneObjects[sceneName] = sceneObject; self.sceneNames[sceneObject] = sceneName
     end
 end
 
@@ -77,18 +75,15 @@ function MoonJohn:addSubscene(subsceneName, subsceneObject, override)
     end
 end
 
-local function callTransitionInScene(self, action)
-    if self.currentScene then
-        if action == "entering" and self.currentScene.entering then self.currentScene:entering()
-        elseif action == "going out" and self.currentScene.goingOut then self.currentScene:goingOut()
-        end
-    end
+local function callTransitionInScene(self, action, newOldScene)
+    if self.currentScene and self.currentScene[action] then self.current[action](self.currentScene, self.sceneNames[newOldScene]) end
 end
 
 local function switchScene(self, scene, message)
-    callTransitionInScene(self, "going out"); self.sceneStack.push(self.currentScene)
-    self.currentScene = self.sceneObjects[scene] or self.currentScene; self.currentScene.message = message
-    callTransitionInScene(self, "entering"); self.currentSubscene = nil
+    local toEnterScene = self.sceneObjects[scene] or self.currentScene; local oldScene = self.currentScene
+    callTransitionInScene(self, "goingOut", toEnterScene); self.sceneStack.push(self.currentScene)
+    self.currentScene = toEnterScene; self.currentScene.message = message
+    callTransitionInScene(self, "entering", oldScene); self.currentSubscene = nil
 end
 
 function MoonJohn:switchScene(scene, message)
@@ -102,8 +97,8 @@ function MoonJohn:switchScene(scene, message)
 end
 
 local function previousScene(self)
-    callTransitionInScene(self, "going out"); self.currentScene = self.sceneStack.pop()
-    callTransitionInScene(self, "entering"); self.currentSubscene = nil
+    local toEnterScene = self.currentScene; callTransitionInScene(self, "goingOut", self.sceneStack.peek())
+    self.currentScene = self.sceneStack.pop(); callTransitionInScene(self, "entering", toEnterScene); self.currentSubscene = nil
 end
 
 function MoonJohn:previousScene()
