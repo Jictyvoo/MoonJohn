@@ -60,7 +60,7 @@ function MoonJohn:new(firstScene)
     return setmetatable(this, MoonJohn)
 end
 
-function MoonJohn:reset(scene)
+function MoonJohn:reset(scene) --[[ A function that is called to reset the scene --]]
     assert(self.sceneObjects[scene], "Unable to find required scene: '" .. tostring(scene) .. "'")
     if self.sceneObjects[scene].reset then
         self.sceneObjects[scene]:reset()
@@ -138,21 +138,15 @@ function MoonJohn:switchSubscene(subscene, args)
     self.currentSubscene.args = args
 end
 
-function MoonJohn:exitSubscene()
-    self.currentSubscene = nil
-end
+function MoonJohn:exitSubscene() self.currentSubscene = nil end
 
 function MoonJohn:setTransition(update, draw, callWhenOver)
     self.transition = {draw = draw, update = update, callback = callWhenOver}
 end
 
-function MoonJohn:isTransitionOver()
-    return self.transition == nil
-end
+function MoonJohn:isTransitionOver() return self.transition == nil end
 
-function MoonJohn:setDefaultTransition(transition)
-    self.defaultTransition = transition
-end
+function MoonJohn:setDefaultTransition(transition) self.defaultTransition = transition end
 
 local function inputEvents(self, name, ...)
     if not self.transition then
@@ -166,49 +160,17 @@ local function inputEvents(self, name, ...)
     end
 end
 do --[[ Here's all event functions --]]
-    function MoonJohn:keypressed(key, scancode, isrepeat)
-        inputEvents(self, "keypressed", key, scancode, isrepeat)
-    end
-
-    function MoonJohn:keyreleased(key, scancode)
-        inputEvents(self, "keyreleased", key, scancode)
-    end
-
-    function MoonJohn:textedited(text, start, length)
-        inputEvents(self, "textedited", text, start, length)
-    end
-
-    function MoonJohn:textinput(text)
-        inputEvents(self, "textinput", text)
-    end
-
-    function MoonJohn:mousemoved(x, y, dx, dy, istouch)
-        inputEvents(self, "mousemoved", x, y, dx, dy, istouch)
-    end
-
-    function MoonJohn:mousepressed(x, y, button)
-        inputEvents(self, "mousepressed", x, y, button)
-    end
-
-    function MoonJohn:mousereleased(x, y, button)
-        inputEvents(self, "mousereleased", x, y, button)
-    end
-
-    function MoonJohn:wheelmoved(x, y)
-        inputEvents(self, "wheelmoved", x, y)
-    end
-
-    function MoonJohn:touchmoved(id, x, y, dx, dy, pressure)
-        inputEvents(self, "touchmoved", id, x, y, dx, dy, pressure)
-    end
-
-    function MoonJohn:touchpressed(id, x, y, dx, dy, pressure)
-        inputEvents(self, "touchpressed", id, x, y, dx, dy, pressure)
-    end
-
-    function MoonJohn:touchreleased(id, x, y, dx, dy, pressure)
-        inputEvents(self, "touchreleased", id, x, y, dx, dy, pressure)
-    end
+    function MoonJohn:keypressed(key, scancode, isrepeat) inputEvents(self, "keypressed", key, scancode, isrepeat) end
+    function MoonJohn:keyreleased(key, scancode) inputEvents(self, "keyreleased", key, scancode) end
+    function MoonJohn:textedited(text, start, length) inputEvents(self, "textedited", text, start, length) end
+    function MoonJohn:textinput(text) inputEvents(self, "textinput", text) end
+    function MoonJohn:mousemoved(x, y, dx, dy, istouch) inputEvents(self, "mousemoved", x, y, dx, dy, istouch) end
+    function MoonJohn:mousepressed(x, y, button) inputEvents(self, "mousepressed", x, y, button) end
+    function MoonJohn:mousereleased(x, y, button) inputEvents(self, "mousereleased", x, y, button) end
+    function MoonJohn:wheelmoved(x, y) inputEvents(self, "wheelmoved", x, y) end
+    function MoonJohn:touchmoved(id, x, y, dx, dy, pressure) inputEvents(self, "touchmoved", id, x, y, dx, dy, pressure) end
+    function MoonJohn:touchpressed(id, x, y, dx, dy, pressure) inputEvents(self, "touchpressed", id, x, y, dx, dy, pressure) end
+    function MoonJohn:touchreleased(id, x, y, dx, dy, pressure) inputEvents(self, "touchreleased", id, x, y, dx, dy, pressure) end
 end
 
 function MoonJohn:update(dt)
