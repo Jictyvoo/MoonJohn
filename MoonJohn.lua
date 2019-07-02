@@ -76,7 +76,7 @@ function MoonJohn:addSubscene(subsceneName, subsceneObject, override)
 end
 
 local function callTransitionInScene(self, action, newOldScene)
-    if self.currentScene and self.currentScene[action] then self.current[action](self.currentScene, self.sceneNames[newOldScene]) end
+    if self.currentScene and self.currentScene[action] then self.currentScene[action](self.currentScene, self.sceneNames[newOldScene]) end
 end
 
 local function switchScene(self, scene, message)
