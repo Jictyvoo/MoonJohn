@@ -41,19 +41,35 @@ function Stack:new()
     return {peek = peek, push = push, pop = pop, isEmpty = isEmpty, size = size}
 end
 
-local MoonJohn = {}
+local MoonJohn = {}; MoonJohn.__index = MoonJohn
 
-MoonJohn.__index = MoonJohn
+local function inputEvents(self, name, ...)
+    if not self.transition then
+        if not self.currentSubscene then
+            if self.currentScene[name] then
+                self.currentScene[name](self.currentScene, ...)
+            end
+        elseif self.currentSubscene[name] then
+            self.currentSubscene[name](self.currentSubscene, ...)
+        end
+    end
+end
 
 function MoonJohn:new(firstScene)
     assert(firstScene, "MoonJohn needs a initial scene to work properly")
-    local this = {
-        currentScene = nil, currentSubscene = nil,
+    local this = setmetatable({
+        currentScene = firstScene, currentSubscene = nil,
         sceneObjects = {}, subsceneObjects = {}, sceneNames = {},
         sceneStack = Stack:new(), transition = nil, defaultTransition = nil
+    }, MoonJohn)
+    
+    local events = {
+        "keypressed", "keyreleased", "textedited", "textinput", "mousemoved", "mousepressed",
+        "mousereleased", "touchmoved", "touchpressed", "touchreleased"
     }
-
-    this.currentScene = firstScene
+    for _, eventName in pairs(events) do --[[ Here's all event functions --]]
+        this[eventName] = function(this, ...) inputEvents(this, eventName, ...) end
+    end
 
     return setmetatable(this, MoonJohn)
 end
@@ -137,31 +153,6 @@ end
 function MoonJohn:isTransitionOver() return self.transition == nil end
 
 function MoonJohn:setDefaultTransition(transition) self.defaultTransition = transition end
-
-local function inputEvents(self, name, ...)
-    if not self.transition then
-        if not self.currentSubscene then
-            if self.currentScene[name] then
-                self.currentScene[name](self.currentScene, ...)
-            end
-        elseif self.currentSubscene[name] then
-            self.currentSubscene[name](self.currentSubscene, ...)
-        end
-    end
-end
-do --[[ Here's all event functions --]]
-    function MoonJohn:keypressed(key, scancode, isrepeat) inputEvents(self, "keypressed", key, scancode, isrepeat) end
-    function MoonJohn:keyreleased(key, scancode) inputEvents(self, "keyreleased", key, scancode) end
-    function MoonJohn:textedited(text, start, length) inputEvents(self, "textedited", text, start, length) end
-    function MoonJohn:textinput(text) inputEvents(self, "textinput", text) end
-    function MoonJohn:mousemoved(x, y, dx, dy, istouch) inputEvents(self, "mousemoved", x, y, dx, dy, istouch) end
-    function MoonJohn:mousepressed(x, y, button) inputEvents(self, "mousepressed", x, y, button) end
-    function MoonJohn:mousereleased(x, y, button) inputEvents(self, "mousereleased", x, y, button) end
-    function MoonJohn:wheelmoved(x, y) inputEvents(self, "wheelmoved", x, y) end
-    function MoonJohn:touchmoved(id, x, y, dx, dy, pressure) inputEvents(self, "touchmoved", id, x, y, dx, dy, pressure) end
-    function MoonJohn:touchpressed(id, x, y, dx, dy, pressure) inputEvents(self, "touchpressed", id, x, y, dx, dy, pressure) end
-    function MoonJohn:touchreleased(id, x, y, dx, dy, pressure) inputEvents(self, "touchreleased", id, x, y, dx, dy, pressure) end
-end
 
 function MoonJohn:update(dt)
     if self.transition then
