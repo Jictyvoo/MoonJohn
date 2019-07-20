@@ -65,7 +65,7 @@ function MoonJohn:new(firstScene)
     
     local events = {
         "keypressed", "keyreleased", "textedited", "textinput", "mousemoved", "mousepressed",
-        "mousereleased", "touchmoved", "touchpressed", "touchreleased"
+        "mousereleased", "touchmoved", "touchpressed", "touchreleased", "wheelmoved"
     }
     for _, eventName in pairs(events) do --[[ Here's all event functions --]]
         this[eventName] = function(this, ...) inputEvents(this, eventName, ...) end
