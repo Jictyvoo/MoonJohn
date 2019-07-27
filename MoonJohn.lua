@@ -130,12 +130,14 @@ end
 
 function MoonJohn:clearStack(scene)
     assert(scene and self.sceneObjects[scene], "Unable to find required scene: '" .. tostring(scene) .. "'")
+    local oldScene = self.currentScene
     while not self.sceneStack.isEmpty() do
         self.currentScene = self.sceneStack.pop()
     end
-    self.currentScene = (scene and self.sceneObjects[scene]) or self.currentScene
-    self.sceneStack.push(self.currentScene)
-    self.currentSubscene = nil
+    local toEnterScene = (scene and self.sceneObjects[scene]) or self.currentScene
+    callTransitionInScene(self, "entering", oldScene); self.currentScene = oldScene
+    callTransitionInScene(self, "goingOut", toEnterScene); self.currentScene = toEnterScene
+    self.sceneStack.push(self.currentScene); self.currentSubscene = nil
 end
 
 function MoonJohn:switchSubscene(subscene, args)
