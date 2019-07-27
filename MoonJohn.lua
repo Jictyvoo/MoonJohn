@@ -92,6 +92,7 @@ function MoonJohn:addSubscene(subsceneName, subsceneObject, override)
 end
 
 local function callTransitionInScene(self, action, newOldScene)
+    --[[ print(self.sceneNames[self.currentScene], action, self.sceneNames[newOldScene]) -- print for debug purposes ]]
     if self.currentScene and self.currentScene[action] then self.currentScene[action](self.currentScene, self.sceneNames[newOldScene]) end
 end
 
@@ -134,7 +135,7 @@ function MoonJohn:clearStack(scene)
     while not self.sceneStack.isEmpty() do
         self.currentScene = self.sceneStack.pop()
     end
-    local toEnterScene = (scene and self.sceneObjects[scene]) or self.currentScene
+    local toEnterScene = (scene and self.sceneObjects[scene]) or self.currentScene; self.currentScene = toEnterScene
     callTransitionInScene(self, "entering", oldScene); self.currentScene = oldScene
     callTransitionInScene(self, "goingOut", toEnterScene); self.currentScene = toEnterScene
     self.sceneStack.push(self.currentScene); self.currentSubscene = nil
