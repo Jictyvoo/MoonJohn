@@ -7,17 +7,14 @@ A Scene manager to help in transictions between scenes, like "menu" and "level 1
 A Scene is like a second main.lua file, but will have a name, and is independent. So to use is very simple, write your scene like this:
 
 ```lua
-local SplashScreen = {}
-
-SplashScreen.__index = SplashScreen
+local SplashScreen = {}; SplashScreen.__index = SplashScreen
 
 function SplashScreen:new()
     local this = {
         splash_company = love.graphics.newImage("assets/company_logo.png"),
         splash_loveLogo = love.graphics.newImage("assets/engine_logo.png"),
         all = {"splash_company", "splash_loveLogo"},
-        current = 1,
-        elapsedTime = 0
+        current = 1, elapsedTime = 0
     }
 
     SplashScreen:rescaleImage("splash_loveLogo", this.splash_loveLogo)
@@ -26,21 +23,10 @@ function SplashScreen:new()
     return setmetatable(this, SplashScreen)
 end
 
-function SplashScreen:rescaleImage(name, image)
-    --[[code--]]
-end
-
-function SplashScreen:keypressed(key, scancode, isrepeat)
-    --[[Here will came your keypressed function--]]
-end
-
-function SplashScreen:update(dt)
-    --[[Here will came your update function--]]
-end
-
-function SplashScreen:draw()
-    --[[Here will came your draw function--]]
-end
+function SplashScreen:rescaleImage(name, image) --[[code--]] end
+function SplashScreen:keypressed(key, scancode, isrepeat) --[[Here will came your keypressed function--]] end
+function SplashScreen:update(dt) --[[Here will came your update function--]] end
+function SplashScreen:draw() --[[Here will came your draw function--]] end
 
 return SplashScreen
 ```
@@ -56,20 +42,20 @@ Like a Scene, subscenes have the same function and do the same thing, the differ
 All scenes and subscenes have these methods:
 
 ```lua
-function sceneDirector:keypressed(key, scancode, isrepeat) end
-function sceneDirector:keyreleased(key, scancode) end
+function MoonJohn:keypressed(key, scancode, isrepeat) end
+function MoonJohn:keyreleased(key, scancode) end
 function MoonJohn:textedited(text, start, length) end
 function MoonJohn:textinput(text) end
-function sceneDirector:mousemoved(x, y, dx, dy, istouch) end
-function sceneDirector:mousepressed(x, y, button) end
-function sceneDirector:mousereleased(x, y, button) end
-function sceneDirector:wheelmoved(x, y) end
+function MoonJohn:mousemoved(x, y, dx, dy, istouch) end
+function MoonJohn:mousepressed(x, y, button) end
+function MoonJohn:mousereleased(x, y, button) end
+function MoonJohn:wheelmoved(x, y) end
 function MoonJohn:touchmoved(id, x, y, dx, dy, pressure) end
 function MoonJohn:touchpressed(id, x, y, dx, dy, pressure) end
 function MoonJohn:touchreleased(id, x, y, dx, dy, pressure) end
-function sceneDirector:update(dt) end
-function sceneDirector:draw() end
-function sceneDirector:resize(w, h) end
+function MoonJohn:update(dt) end
+function MoonJohn:draw() end
+function MoonJohn:resize(w, h) end
 ```
 
 You don't need to implemented all of this, MoonJohn will know if the function exists or not to use.

@@ -1,19 +1,13 @@
-local PauseGame = {}
-
-PauseGame.__index = PauseGame
+local PauseGame = {}; PauseGame.__index = PauseGame
 
 function PauseGame:new()
-    local this = {
-
-    }
+    local this = {}
 
     return setmetatable(this, PauseGame)
 end
 
 function PauseGame:keypressed(key, scancode, isrepeat)
-    if key == "escape" then
-        sceneDirector:exitSubscene()
-    end
+    if key == "p" then moonJohn:exitSubscene() end
 end
 
 function PauseGame:draw()
